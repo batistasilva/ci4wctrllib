@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Cadastros - Cep</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div class="modal fade" id="ModalZipCode">
+            <div class="modal-dialog" style="width: 550px;">
+                <div class="modal-content">
+                    <div class="modal-header" style="background: #3072AB; color: #FFFFFF;" >
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Fechar</span></button>
+                        <h3 class="modal-title" id="memberModalLabel">Cadastros - Novo Cep</h3>
+                    </div>
+                    <div class="modal-body">
+                        <form class="contact" id="FormZipCode">
+                            <div class="form-inline" style="margin-top: 10px; border: 0px #b92c28 solid; margin-left: 5px; margin-bottom: 10px;">
+                                <div class="form-group" style="width: 250px;">
+                                    <label class="control-label" for="InputZipCode">Cep:</label>
+                                    <input type="text" style="width: 245px;" class="form-control text-center" autofocus name="addrzip"  id="InputZipCode" placeholder="Cep" onkeyup="maskIt(this, event, '#####-###')" pattern="[0-9]{5}-[0-9]{3}">
+                                </div>
+                                <div class="form-group"  style="width: 250px;">
+                                    <label for="InputAddrState">Estado:</label>
+                                    <div>
+                                        <input type="text" style="width: 245px;" class="form-control text-center" autofocus name="addrstate" id="InputAddrState" placeholder="Estado" required pattern="[a-zA-Z]{0,2}">
+                                    </div>
+                                </div>                                 
+                            </div>
+                            <div class="form-inline" style="margin-top: 10px; margin-left: 5px; margin-bottom: 10px;">
+                                <div class="form-group" style="width: 500px;">
+                                    <label class="control-label" for="InputAddress">Endereço:</label>
+                                    <input type="text" style="width: 500px;" class="form-control text-center" autofocus name="address" id="InputAddress" placeholder="Endereço" required pattern="[a-zA-Z0-9,\u00C0-\u00ff\s]{0,40}">                                    
+                                </div>
+                                <div class="form-group" style="width: 500px;">
+                                    <label for="InputAddrComp">Complemento:</label>
+                                    <div>
+                                        <input type="text" style="width: 500px;" class="form-control text-center" autofocus name="addrcomp" id="InputAddrComp" placeholder="Complemento..">
+                                    </div>                                                        
+                                </div>
+                            </div>
+                            <div class="form-inline" style="margin-top: 10px; margin-left: 5px; margin-bottom: 10px;">                  
+                                <div class="form-group" style="width: 500px;">
+                                    <div class="form-group"  style="width: 500px;">
+                                        <label for="InputAddrDist">Bairro:</label>
+                                        <div>
+                                            <input type="text" style="width: 500px;" class="form-control text-center" name="addrdist" autofocus id="InputAddrDist" placeholder="Bairro ou Localidade" required pattern="[a-zA-Z.\u00C0-\u00ff\s]{0,30}">
+                                        </div>
+                                    </div>
+                                </div>  
+                                <div class="form-group" style="width: 500px;">
+                                    <div class="form-group" style="width: 500px;">
+                                        <label for="InputAddrCity">Cidade:</label>
+                                        <div>
+                                            <input type="text" style="width: 500px;" class="form-control text-center" autofocus name="addrcity" id="InputAddrCity" placeholder="Cidade" required pattern="[a-zA-Z\u00C0-\u00ff\s]{0,25}">
+                                        </div>
+                                    </div>  
+                                </div>
+                            </div>                             
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <input class="btn btn-success" type="submit" value="Enviar!" id="submitAddZipCode">
+                        <a href="#" class="btn" data-dismiss="modal">Sair</a>
+                    </div>
+                    <!-- where the response will be displayed -->
+                    <div id='res-zipcode'></div>
+                </div>
+            </div>  
+        </div>
+    </body>
+    <script>
+        /***
+         * Funtion to add a new CustType for 
+         * Customer.
+         */
+        $(document).ready(function () {
+            $("#submitAddZipCode").click(function () {
+                //
+                if (beforeSubmit() == true) {
+                    //
+                    $.ajax({
+                        type: "POST",
+                        url: "<?php echo URL; ?>mngcust/addNewZipCode",
+                        data: $('#FormZipCode').serialize()
+                    }).done(function (data) {
+                        $('#res-zipcode').html(data);
+                      //  console.log("Result....: " + data);
+                        $("#InputZipCode").val('');
+                        $("#InputAddrState").val('');
+                        $("#InputAddress").val('');    
+                        $("#InputAddrComp").val('');   
+                        $("#InputAddrDist").val('');  
+                        $("#InputAddrCity").val('');                        
+                    }).fail(function (data) {
+                        $('#res-zipcode').html(data);
+                      //  console.log("Posting Failed Result....: " + data);
+                        // just in case posting your form failed
+                    });
+                }//endif
+            });
+
+            //function to check empty field before data send.
+            function beforeSubmit() {
+
+                if (!$("#InputZipCode").val()) //check empty input filed
+                {
+                    $msg = "Informe o Cep!";
+                    $msg = getMsg($msg);
+
+                    $('#res-zipcode').html($msg);
+                    //
+                    return false;
+                }
+
+                if (!$("#InputAddrState").val()) {
+                    $msg = "Informe o Estado!";
+                    $msg = getMsg($msg);
+
+                    $('#res-zipcode').html($msg);
+                    //
+                    return false;
+                }
+                
+                if (!$("#InputAddress").val()) {
+                    $msg = "Informe o Endereço!";
+                    $msg = getMsg($msg);
+
+                    $('#res-zipcode').html($msg);
+                    //
+                    return false;
+                }
+                
+                if (!$("#InputAddrDist").val()) {
+                    $msg = "Informe o Bairro/Região!";
+                    $msg = getMsg($msg);
+
+                    $('#res-zipcode').html($msg);
+                    //
+                    return false;
+                }   
+                
+                if (!$("#InputAddrCity").val()) {
+                    $msg = "Informe a Cidade!";
+                    $msg = getMsg($msg);
+
+                    $('#res-zipcode').html($msg);
+                    //
+                    return false;
+                }  
+                
+                //
+                $('#res-zipcode').html("");
+                //
+                return true;
+            }
+            //
+            function getMsg($msg) {
+                //
+                $strmsg = "<div class='alert alert-block alert-warning fade in' style=' text-align: center;'><button type='button' class='close' data-dismiss='alert'>×</button><h4 class='alert-heading' style='color: #CB3E3A;'> ";
+                $strmsg += $msg;
+                $strmsg += "</h4></div>";
+                //
+                return $strmsg;
+            }
+        });
+
+
+    </script>
+</html>

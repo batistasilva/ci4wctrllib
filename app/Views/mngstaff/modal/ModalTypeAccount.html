@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Cadastro - Tipo de Conta Corrente</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div class="modal fade" id="ModalTypeAccount">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" style="background: #3072AB; color: #FFFFFF;" >
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                            <span class="sr-only">Fechar</span>
+                        </button>
+                        <h3 class="modal-title" id="memberModalLabel">Cadastro - Tipo de Conta Corrente</h3>
+                    </div>
+                    <div class="modal-body">
+                        <form class="contact" id="FormTypeAccount">
+                            <label for="description" class="control-label">Descrição:</label>
+                            <br>
+                            <input id="TypeAccdesc" type="text" name="description" class="form-control text-center" pattern="[a-z\u00C0-\u00ffA-Z._-]{0,30}">
+                            <br>
+                            <label class="control-label" for="acronym">Sigla:</label><br>
+                            <input id="TypeAccacro" type="text" name="acronym" class="form-control text-center" pattern="[a-z\u00C0-\u00ffA-Z._-]{0,2}">
+                            <br>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <input class="btn btn-success" type="submit" value="Salvar!" id="submitAddTypeAccount">
+                        <a href="#" class="btn" data-dismiss="modal">Sair</a>
+                    </div>
+                    <!-- where the response will be displayed -->
+                    <div id='res-typeaccount'></div>
+                </div>
+            </div>  
+        </div>  
+    </body>
+    <script>
+        /***
+         * Funtion to add a new Type Account to Staff.
+         */
+        $(document).ready(function () {
+            //
+            $("#submitAddTypeAccount").click(function () {
+                //
+                if (beforeSubmit() == true) {
+                    $.ajax({
+                        type: "POST",
+                        url: "<?php echo URL; ?>mngtypeaccount/AddTypeAccount",
+                        data: $('#FormTypeAccount').serialize()
+                    }).done(function (data) {
+                        // show the response
+                        $('#res-typeaccount').html(data);
+                        console.log("Result....: " + data);
+                        $("#TypeAccdesc").val('');
+                        $("#TypeAccacro").val('');
+                        //Update type account list
+                        search_typeacc();
+                    }).fail(function (data) {
+                        $('#res-typeaccount').html(data);
+                        console.log("Posting Failed Result....: " + data);
+                        // just in case posting your form failed
+                    });
+                }//endif
+            });
+            
+            //function to check empty field before data send.
+            function beforeSubmit() {
+
+                if (!$("#TypeAccdesc").val()) //check empty input filed
+                {
+                    $msg = "Informe uma Descrição para o Tipo Conta!";
+                    $msg = getMsg($msg);
+
+                    $('#res-typeaccount').html($msg);
+                    //
+                    return false;
+                }
+
+                if (!$("#TypeAccacro").val()) {
+                    $msg = "Informe uma Descrição Curta!";
+                    $msg = getMsg($msg);
+
+                    $('#res-typeaccount').html($msg);
+                    //
+                    return false;
+                }
+                //
+                $('#res-typeaccount').html("");
+                //
+                return true;
+            }
+            //
+            function getMsg($msg) {
+                //
+                $strmsg = "<div class='alert alert-block alert-danger fade in'><button type='button' class='close' data-dismiss='alert'>×</button><h4 class='alert-heading'>";
+                $strmsg += $msg;
+                $strmsg += "</h4></div>";
+                //
+                return $strmsg;
+            }
+        });
+
+        /**
+         * Function to search type account to
+         * update type account list 
+         * @returns {undefined}     
+         */
+        function search_typeacc() {
+            var url = '<?php echo URL; ?>mngtypeaccount/updateTypeAccountList';
+            $.get(url, function (dataReturn) {
+                $('#DivTypeAccount').html(dataReturn);
+            });
+        }
+    </script>
+</html>

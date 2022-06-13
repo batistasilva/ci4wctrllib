@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Cadastro - Agências Bancárias</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div class="modal fade" id="ModalBankBranch">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" style="background: #3072AB; color: #FFFFFF;" >
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                            <span class="sr-only">Fechar</span>
+                        </button>
+                        <h3 class="modal-title" id="memberModalLabel">Cadastro - Agências Bancárias</h3>
+                    </div>
+                    <div class="modal-body">
+                        <form class="contact" id="FormBankBranch">
+                            <label for="description" class="control-label">Descrição:</label>
+                            <br>
+                            <input id="descrip" type="text" name="description" class="form-control text-center" pattern="[a-z\u00C0-\u00ffA-Z._-]{0,30}"/>
+                            <br>
+                            <label class="control-label" for="number">Número:</label><br>
+                            <input id="number" type="number" name="number" class="form-control text-center"/>
+                            <br>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <input class="btn btn-success" type="submit" value="Salvar!" id="submitAddBankBranch">
+                        <a href="#" class="btn" data-dismiss="modal">Sair</a>
+                    </div>
+                    <!-- where the response will be displayed -->
+                    <div style="font-size: 11px; color: #009f15;" id='res-bankbranch'></div>
+                </div>
+            </div>  
+        </div> 
+    </body>
+    <script>
+        /***
+         * Funtion to add a new Bank for Staff.
+         */
+        $(document).ready(function () {
+            $("#submitAddBankBranch").click(function () {
+                //
+                if (beforeSubmit() == true) {
+                    //
+                    $.ajax({
+                        type: "POST",
+                        url: "<?php echo URL; ?>mngbank/AddBank",
+                        data: $('#FormBankBranch').serialize()
+                    }).done(function (data) {
+                        //var obj = $.parseJSON(data);
+                        // show the response
+                        $('#res-bankbranch').html(data);
+                        console.log("Result....: " + data);
+                        $("#descrip").val('');
+                        $("#number").val('');
+
+                        //Update bank list
+                        search_banks();
+
+                    }).fail(function (data) {
+                        $('#res-bankbranch').html(data);
+                        console.log("Posting Failed Result....: " + data);
+                        // just in case posting your form failed
+                    });
+                }
+            });
+
+            //function to check empty field before data send.
+            function beforeSubmit() {
+
+                console.log("Inside beforeSubmit()");
+
+                if (!$("#descrip").val()) //check empty input filed
+                {
+                    $msg = "Informe uma Descrição para o Banco!";
+                    $msg = getMsg($msg);
+
+                    $("#res-bankbranch").html($msg);
+                    return false;
+                }
+
+                if (!$("#number").val()) {
+                    $msg = "Informe o Número!";
+                    $msg = getMsg($msg);
+
+                    $("#res-bankbranch").html($msg);
+                    //
+                    return false;
+                }
+
+                $("#res-bankbranch").html("");
+                //
+                return true;
+            }
+
+            function getMsg($msg) {
+                //
+                $strmsg = "<div class='alert alert-block alert-danger fade in'><button type='button' class='close' data-dismiss='alert'>×</button><h4 class='alert-heading'>";
+                $strmsg += $msg;
+                $strmsg += "</h4></div>";
+                //
+                return $strmsg;
+            }
+        });
+
+        /**
+         * Function to search bank to
+         * update bank 
+         * @returns {undefined}     
+         */
+        function search_banks() {
+            var url = '<?php echo URL; ?>mngbank/updateBanksList';
+            $.get(url, function (dataReturn) {
+                $('#BankBranch').html(dataReturn);
+            });
+        }
+
+
+    </script>
+</html>

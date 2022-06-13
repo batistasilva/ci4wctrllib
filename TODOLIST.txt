@@ -1,0 +1,32 @@
+
+What was made on lib projet?
+----------------------------
+Was set up a configuration to application start, without (http://localhost/myapp/public/index.php) to 
+(http://localhost/myapp/). What was made, was create 2 file [.htaccess]. One in root from application, and
+other in folder public. As well was changed ( public $indexPage = 'index.php';) , from folder (/app/Config/App.php), to
+   ( public $indexPage = '';). 
+
+Was set up  a configuration to read conection to mysql from .env file.
+
+Was made a lib class to connect to mysql by PDO drive, return a entity class.
+
+Was made a test on a page user-view, and everything work well.
+
+Structure of project to work fine:
+
+App - Libraries - Mypdo
+App - Entities - User
+App - Models - UserModel
+App - Config - Routes, was create that Router = $routes->get('users', 'UserCrud::users');
+App - Controllers - UserCrud
+App - Views - user_view
+
+What need's to do?
+
+Create that others module to add-user, create-user, update-user and delete.
+
+
+That's it...
+
+
+I'm happy to have done that..

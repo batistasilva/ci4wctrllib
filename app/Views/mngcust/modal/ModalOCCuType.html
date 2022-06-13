@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Cadastros - Área de Atuação</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div class="modal fade" id="ModalOCCuType">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" style="background: #3072AB; color: #FFFFFF;" >
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Fechar</span></button>
+                        <h3 class="modal-title" id="memberModalLabel">Cadastros - Área de Atuação</h3>
+                    </div>
+                    <div class="modal-body">
+                        <form class="contact" id="FormOccuType">
+                            <label for="OCCTypeLongname" class="control-label">Descrição Longa:</label><br>
+                            <input id="OCCTypeLongname" type="text" name="longname" class="form-control text-center"><br>
+                            <label class="control-label" for="OCCTypeShortname">Descrição Curta:</label><br>
+                            <input id="OCCTypeShortname" type="text" name="shortname" class="form-control text-center"><br>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <input class="btn btn-success" type="submit" value="Enviar!" id="submitSendOCCuTypeForm">
+                        <a href="#" class="btn" data-dismiss="modal">Sair</a>
+                    </div>
+                    <!-- where the response will be displayed -->
+                    <div id='res-occutype'></div>
+                </div>
+            </div>  
+        </div>  
+    </body>
+    <script>
+        /***
+         * Funtion to add a new CustType for 
+         * Customer.
+         */
+        $(document).ready(function () {
+            $("#submitSendOCCuTypeForm").click(function () {
+                //
+                if (beforeSubmit() == true) {
+                    //
+                    $.ajax({
+                        type: "POST",
+                        url: "<?php echo URL; ?>mngcust/addOCCTypeSave",
+                        data: $('#FormOccuType').serialize()
+                    }).done(function (data) {
+                        //var obj = $.parseJSON(data);
+                        // show the response
+                        $('#res-occutype').html(data);
+                        console.log("Result....: " + data);
+                        $("#OCCTypeLongname").val('');
+                        $("#OCCTypeShortname").val('');
+                        search_occutype();
+                    }).fail(function (data) {
+                        $('#res-occutype').html(data);
+                        console.log("Posting Failed Result....: " + data);
+                        // just in case posting your form failed
+                    });
+                }
+            });
+            //
+            //function to check empty field before data send.
+            function beforeSubmit() {
+
+                if (!$("#OCCTypeLongname").val()) //check empty input filed
+                {
+                    $msg = "Informe uma Descrição para Área de Atuação do Cliente!";
+                    $msg = getMsg($msg);
+
+                    $('#res-occutype').html($msg);
+                    //
+                    return false;
+                }
+
+                if (!$("#OCCTypeShortname").val()) {
+                    $msg = "Informe uma Descrição Curta!";
+                    $msg = getMsg($msg);
+
+                    $('#res-occutype').html($msg);
+                    //
+                    return false;
+                }
+                //
+                $('#res-occutype').html("");
+                //
+                return true;
+            }
+            //
+            function getMsg($msg) {
+                //
+                $strmsg = "<div class='alert alert-block alert-danger fade in'><button type='button' class='close' data-dismiss='alert'>×</button><h4 class='alert-heading'>";
+                $strmsg += $msg;
+                $strmsg += "</h4></div>";
+                //
+                return $strmsg;
+            }
+        });
+
+
+        /**
+         * Function to search Occtype
+         * update customer types list 
+         * @returns {undefined}     
+         */
+        function search_occutype() {
+            var url = '<?php echo URL; ?>mngcust/updateOCCType';
+            $.get(url, function (dataReturn) {
+                $('#DivOccuType').html(dataReturn);
+            });
+        }
+
+    </script>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Foto do Colaborador</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--<script src="<?php echo URL; ?>views/mngstaff/modal/js//jquery.min.js" type="text/javascript"></script>-->
+        <script src="<?php echo URL; ?>views/mngstaff/modal/js//jquery.Jcrop.js" type="text/javascript"></script>
+        <script src="<?php echo URL; ?>views/mngstaff/modal/js/jquery.Jcrop.js" type="text/javascript"></script>
+        <!--  <link href="<?php echo URL; ?>views/mngstaff/modal/css/jquery.Jcrop.css" rel="stylesheet" type="text/css"/>-->
+
+        <style>
+            .btn-file {
+                /* position: relative;
+                 overflow: visible;*/
+            }
+
+            .btn-file input[type=file] {
+                top: 0;
+                right: 0;
+                width: 400px;
+                min-height: 100%;
+                font-size: 11px;
+                text-align: left;
+                filter: alpha(opacity=0);
+                opacity: 10;
+                outline: none;
+                cursor: inherit;
+                display: block;
+            }
+        </style>        
+    </head>
+    <body>
+        <div class="modal fade" id="ModalStaffPhoto">
+            <div class="modal-dialog" style="width: 650px;">
+                <div class="modal-content">
+                    <div class="modal-header" style="background: #3072AB; color: #FFFFFF;" >
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                            <span class="sr-only">Fechar</span>
+                        </button>
+                        <h3 class="modal-title" id="memberModalLabel">Foto do Colaborador</h3>
+                    </div>
+                    <div class="modal-body">
+                        <img id="uploadPreview" src=""/>
+                        <form class="contact" id="FormUpload">
+                            <div class="form-inline" style="margin-top: 10px; margin-left: 5px; margin-bottom: 10px;">                              
+                                <input type="hidden" id="PersonID" name="person_id" />
+                                <input type="hidden" id="x" name="x" />
+                                <input type="hidden" id="y" name="y" />
+                                <input type="hidden" id="w" name="w" />
+                                <input type="hidden" id="h" name="h" />
+                            </div> 
+                        </form>    
+                        <br>
+
+                    </div>
+                    <div class="modal-footer">
+                        <input class="btn btn-success" type="submit" value="Enviar!" id="submitSendPhoto">
+                        <a href="#" class="btn" data-dismiss="modal">Sair</a>
+                    </div>
+                    <!-- where the response will be displayed -->
+                    <div id='res-department'></div>
+                </div>
+            </div>  
+        </div>
+    </body>
+    <script>
+
+        $(function () {
+            $('#uploadPreview').Jcrop({
+                aspectRatio: 1,
+                onSelect: updateCoords
+            });
+        });
+
+        function updateCoords(c)
+        {
+            $('#x').val(c.x);
+            $('#y').val(c.y);
+            $('#w').val(c.w);
+            $('#h').val(c.h);
+        }
+        
+
+        function checkCoords()
+        {
+            if (parseInt($('#w').val()))
+                return true;
+            alert('Please select a crop region then press submit.');
+            return false;
+        }
+        
+        /***
+         * Funtion to add a new Department for Staff.
+         */
+        $(document).ready(function () {
+            $("#submitSendPhoto").click(function () {
+                $.ajax({
+                    type: "POST",
+                    url: "<?php echo URL; ?>mngdptm/AddDepartment",
+                    data: $('#FormDepartment').serialize()
+                }).done(function (data) {
+                    //var obj = $.parseJSON(data);
+                    // show the response
+                    $('#res-department').html(data);
+                    console.log("Result....: " + data);
+                    $("#DptmLongname").val('');
+                    $("#DptmShortname").val('');
+
+                    search_department();
+
+                }).fail(function (data) {
+                    $('#res-department').html(data);
+                    console.log("Posting Failed Result....: " + data);
+                    // just in case posting your form failed
+                });
+            });
+        });
+
+        /* Function to search Department to
+         * update department list 
+         * @returns {undefined}     
+         */
+        function search_department() {
+            var url = '<?php echo URL; ?>mngdptm/updateDptm';
+            $.get(url, function (dataReturn) {
+                $('#DivDepartment').html(dataReturn);
+            });
+        }
+
+    </script>
+</html>
+
